@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceGroupName": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "object"
+    }
+  },
+  "resources": [
+    {
+    "apiVersion": "2024-03-01",
+    "type": "Microsoft.Resources/resourceGroups",
+    "name": "[parameters('resourceGroupName')]",
+    "location": "[parameters('location')]",
+    "tags": "[parameters('tags')]"
+    }
+  ]
+}
