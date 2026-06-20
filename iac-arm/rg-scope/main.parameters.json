@@ -1,0 +1,37 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "centralindia"
+    },
+    "tags": {
+      "value": {
+        "Environment": "test",
+        "Application": "zeiss-assesment",
+        "Owner": "MuhammadAli"
+      }
+    },
+    "storageAccountName": {
+      "value": "stzeissassesment002"
+    },
+    "serviceBusNamespaceName": {
+      "value": "sb-zeiss-assesment-002"
+    },
+    "acrName": {
+      "value": "acrzeissassesment002"
+    },
+    "keyVaultName": {
+      "value": "kv-zeiss-assesment-002"
+    },
+    "containerAppsEnvironmentName": {
+      "value": "aca-zeiss-assesment-002"
+    },
+    "applicationInsightsName": {
+      "value": "appi-zeiss-assessment-002"
+    },
+    "logAnalyticsworkspaceName": {
+      "value": "law-zeiss-assessment-002"
+    }
+  }
+}

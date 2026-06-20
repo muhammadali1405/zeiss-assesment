@@ -1,0 +1,166 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "object"
+    },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "serviceBusNamespaceName": {
+      "type": "string"
+    },
+    "acrName": {
+      "type": "string"
+    },
+    "keyVaultName": {
+      "type": "string"
+    },
+    "containerAppsEnvironmentName": {
+      "type": "string"
+    },
+    "applicationInsightsName": {
+      "type": "string"
+    },
+    "logAnalyticsworkspaceName": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-05-01",
+      "name": "[parameters('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "accessTier": "Hot"
+      }
+    },
+    {
+      "type": "Microsoft.ServiceBus/namespaces",
+      "apiVersion": "2022-10-01-preview",
+      "name": "[parameters('serviceBusNamespaceName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "Basic",
+        "tier": "Basic"
+      }
+    },
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "apiVersion": "2023-07-01",
+      "name": "[parameters('acrName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "Basic"
+      },
+      "properties": {
+        "adminUserEnabled": false
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2023-07-01",
+      "name": "[parameters('keyVaultName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "tenantId": "[subscription().tenantId]",
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "enableRbacAuthorization": true,
+        "accessPolicies": []
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2023-07-01",
+      "name": "[concat(parameters('keyVaultName'), '/appinsights-connection-string')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+        "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]"
+      ],
+      "properties": {
+        "value": "[reference(resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')), '2020-02-02').ConnectionString]"
+      }
+    },
+    {
+      "type": "Microsoft.App/managedEnvironments",
+      "apiVersion": "2024-03-01",
+      "name": "[parameters('containerAppsEnvironmentName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "appLogsConfiguration": {
+          "destination": "azure-monitor"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2023-09-01",
+      "name": "[parameters('logAnalyticsworkspaceName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "sku": {
+          "name": "PerGB2018"
+        },
+        "retentionInDays": 30
+      }
+    },
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[parameters('applicationInsightsName')]",
+      "location": "[parameters('location')]",
+      "kind": "web",
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsworkspaceName'))]"
+      ],
+      "properties": {
+        "Application_Type": "web",
+        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsworkspaceName'))]"
+      }
+    }
+  ],
+  "outputs": {
+    "storageAccountName": {
+      "type": "string",
+      "value": "[parameters('storageAccountName')]"
+    },
+    "serviceBusNamespaceName": {
+      "type": "string",
+      "value": "[parameters('serviceBusNamespaceName')]"
+    },
+    "acrName": {
+      "type": "string",
+      "value": "[parameters('acrName')]"
+    },
+    "keyVaultName": {
+      "type": "string",
+      "value": "[parameters('keyVaultName')]"
+    },
+    "containerAppsEnvironmentName": {
+      "type": "string",
+      "value": "[parameters('containerAppsEnvironmentName')]"
+    },
+    "applicationInsightsConnectionString": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')), '2020-02-02').ConnectionString]"
+    }
+  }
+}

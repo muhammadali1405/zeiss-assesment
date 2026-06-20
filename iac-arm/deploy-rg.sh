@@ -1,11 +1,15 @@
 #!/bin/bash
 
-#parameter file and template file location
-PARAMETER_FILE="iac-arm/subscription-scope/rg.parameters.json"
-TEMPLATE_FILE="iac-arm/subscription-scope/rg.json"
+#parameter file and template file location to create RG
+RG_PARAMETER_FILE="subscription-scope/rg.parameters.json"
+RG_TEMPLATE_FILE="subscription-scope/rg.json"
+
+#parameter file and template file location to create RG
+RES_PARAMETER_FILE="rg-scope/main.parameters.json"
+RES_TEMPLATE_FILE="rg-scope/main.json"
 
 #takes the name of Resource group from the paramater file
-RG_NAME=$(jq -r '.parameters.resourceGroupName.value' "$PARAMETER_FILE")
+RG_NAME=$(jq -r '.parameters.resourceGroupName.value' "$RG_PARAMETER_FILE")
 
 echo "Checking Resource Group: ${RG_NAME}"
 
@@ -17,8 +21,8 @@ else
 
     OUTPUT=$(az deployment sub create \
         --location centralindia \
-        --template-file "$TEMPLATE_FILE" \
-        --parameters "$PARAMETER_FILE" \
+        --template-file "$RG_TEMPLATE_FILE" \
+        --parameters "$RG_PARAMETER_FILE" \
         2>&1)
 
     #checks if previous command suceeded
@@ -30,3 +34,4 @@ else
         exit 1
     fi
 fi
+
