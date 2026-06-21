@@ -32,6 +32,9 @@
     },
     "logAnalyticsworkspaceName": {
       "value": "law-zeiss-assessment-003"
+    },
+    "serviceBusQueueName": {
+      "value": "work-queue"
     }
   }
 }
