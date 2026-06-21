@@ -1,5 +1,7 @@
 set -x
 
+ACR_NAME="acrzeissdev1"
+
 #create app registration
 az ad app create --display-name github-zeiss-assessment
 
@@ -8,16 +10,15 @@ APP_ID=$(az ad app list \
   --display-name github-zeiss-assessment \
   --query "[0].appId" -o tsv)
 
-echo $APP_ID
+# echo $APP_ID
 
 #create service principle for the app reg
 az ad sp create --id $APP_ID
 
 #get the Resource ID of the ACR
 ACR_ID=$(az acr show \
-  --name acrzeissassesment003 \
-  --query id \
-  -o tsv)
+  --name $ACR_NAME \
+  --query id -o tsv)
 
 #assign access to push image to acr for the App registration created
 az role assignment create \

@@ -1,4 +1,4 @@
-name: Docker Image Build and Push
+name: CI/CD workflow
 
 on:
   push:
@@ -7,7 +7,14 @@ on:
 permissions:
   id-token: write
   contents: read
-  
+
+env:
+  ACR_NAME: acrzeissdev1
+  IMAGE_NAME: zeiss-api
+  IMAGE_TAG: ${{ github.run_number }}
+  RESOURCE_GROUP: rg-zeiss-assessment-01
+  CONTAINER_APP_NAME: ca-zeiss-dev-1
+
 jobs:
   build:
     runs-on: self-hosted
@@ -18,8 +25,15 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      - run: az acr login --name acrzeissassesment003
+      - run: az acr login --name $ACR_NAME
       - run: |
           cd api
-          docker build -t acrzeissassesment003.azurecr.io/zeiss-api:${{ github.run_number }} .
-          docker push acrzeissassesment003.azurecr.io/zeiss-api:${{ github.run_number }}
+          docker build -t $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG .
+          docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG
+
+      - name: Deploy to Container App 
+        run: |
+         az containerapp update \
+           --name $CONTAINER_APP_NAME \
+           --resource-group $RESOURCE_GROUP \
+           --image $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG
