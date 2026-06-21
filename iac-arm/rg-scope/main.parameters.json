@@ -5,33 +5,19 @@
     "location": {
       "value": "centralindia"
     },
+    "applicationName": {
+      "value": "zeiss"
+    },
+    "environment": {
+      "value": "dev"
+    },
+    "instanceNumber": {
+      "value": 1
+    },
     "tags": {
-      "value": {
-        "Environment": "test",
-        "Application": "zeiss-assesment",
+    "value": {
         "Owner": "MuhammadAli"
-      }
-    },
-    "storageAccountName": {
-      "value": "stzeissassesment0004"
-    },
-    "serviceBusNamespaceName": {
-      "value": "sb-zeiss-assesment-0004"
-    },
-    "acrName": {
-      "value": "acrzeissassesment0004"
-    },
-    "keyVaultName": {
-      "value": "kv-zeiss-assesment-0004"
-    },
-    "containerAppsEnvironmentName": {
-      "value": "aca-zeiss-assesment-0004"
-    },
-    "applicationInsightsName": {
-      "value": "appi-zeiss-assessment-0004"
-    },
-    "logAnalyticsworkspaceName": {
-      "value": "law-zeiss-assessment-0004"
+    }
     },
     "serviceBusQueueName": {
       "value": "work-queue"
