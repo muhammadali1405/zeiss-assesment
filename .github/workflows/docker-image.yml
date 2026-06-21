@@ -12,6 +12,8 @@ env:
   ACR_NAME: acrzeissdev1
   IMAGE_NAME: zeiss-api
   IMAGE_TAG: ${{ github.run_number }}
+  RESOURCE_GROUP: rg-zeiss-assessment-01
+  CONTAINER_APP_NAME: ca-zeiss-dev-1
 
 jobs:
   build:
@@ -28,3 +30,10 @@ jobs:
           cd api
           docker build -t $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG .
           docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG
+
+      - name: Deploy to Container App 
+        run: |
+         az containerapp update \
+           --name $CONTAINER_APP_NAME \
+           --resource-group $RESOURCE_GROUP \
+           --image $ACR_NAME.azurecr.io/$IMAGE_NAME:$IMAGE_TAG
