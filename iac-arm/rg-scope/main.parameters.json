@@ -13,25 +13,25 @@
       }
     },
     "storageAccountName": {
-      "value": "stzeissassesment002"
+      "value": "stzeissassesment003"
     },
     "serviceBusNamespaceName": {
-      "value": "sb-zeiss-assesment-002"
+      "value": "sb-zeiss-assesment-003"
     },
     "acrName": {
-      "value": "acrzeissassesment002"
+      "value": "acrzeissassesment003"
     },
     "keyVaultName": {
-      "value": "kv-zeiss-assesment-002"
+      "value": "kv-zeiss-assesment-003"
     },
     "containerAppsEnvironmentName": {
-      "value": "aca-zeiss-assesment-002"
+      "value": "aca-zeiss-assesment-003"
     },
     "applicationInsightsName": {
-      "value": "appi-zeiss-assessment-002"
+      "value": "appi-zeiss-assessment-003"
     },
     "logAnalyticsworkspaceName": {
-      "value": "law-zeiss-assessment-002"
+      "value": "law-zeiss-assessment-003"
     }
   }
 }
