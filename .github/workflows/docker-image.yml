@@ -9,11 +9,11 @@ permissions:
   contents: read
 
 env:
-  ACR_NAME: acrzeissdev1
+  ACR_NAME: acrzeissdev2
   IMAGE_NAME: zeiss-api
   IMAGE_TAG: ${{ github.run_number }}
-  RESOURCE_GROUP: rg-zeiss-assessment-01
-  CONTAINER_APP_NAME: ca-zeiss-dev-1
+  RESOURCE_GROUP: rg-zeiss-assessment-02
+  CONTAINER_APP_NAME: ca-zeiss-dev-2
 
 jobs:
   build:
