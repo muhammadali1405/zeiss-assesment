@@ -21,16 +21,9 @@ OUTPUT=$(az deployment group create \
     --resource-group "${RG_NAME}" \
     --template-file "$RES_TEMPLATE_FILE" \
     --parameters @"$RES_PARAMETER_FILE" \
-    2>&1)
+    -o json)
 
-# checks if previous command succeeded
-if [ $? -eq 0 ]; then
-    echo "Resources deployed successfully."
-else
-    echo "Failed to deploy resources."
-    echo "$OUTPUT"
-    exit 1
-fi
+echo "$OUTPUT" | jq '.properties.outputs'
 
 else
 
