@@ -8,3 +8,9 @@ zeiss assesment Muhammad Ali DevOps
     a. A simple Python API app
 3. scripts:
     a. Contains script to create connection b/w Azure container registry and GitHub
+
+
+
+Pending:
+    1. Enable managed identity and add Azure service bus data roles and modify api to use that
+    2. Add deployment in github action workflow
