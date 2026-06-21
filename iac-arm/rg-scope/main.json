@@ -203,7 +203,13 @@
           "ingress": {
             "external": true,
             "targetPort": 8000
-          }
+          },  
+          "registries": [
+            {
+              "server": "[concat(variables('acrName'), '.azurecr.io')]",
+              "identity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]"
+            }
+          ]
         },
         "template": {
           "containers": [
