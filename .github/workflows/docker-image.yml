@@ -20,5 +20,6 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - run: az acr login --name acrzeissassesment003
       - run: |
+          cd api
           docker build -t acrzeissassesment003.azurecr.io/zeiss-api:${{ github.run_number }} .
           docker push acrzeissassesment003.azurecr.io/zeiss-api:${{ github.run_number }}
