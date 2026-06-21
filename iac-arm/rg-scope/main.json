@@ -5,41 +5,43 @@
     "location": {
       "type": "string"
     },
+    "applicationName": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "string",
+      "allowedValues": [
+        "dev",
+        "test",
+        "prod"
+      ]
+    },
+    "instanceNumber": {
+      "type": "int"
+    },
     "tags": {
       "type": "object"
-    },
-    "storageAccountName": {
-      "type": "string"
-    },
-    "serviceBusNamespaceName": {
-      "type": "string"
-    },
-    "acrName": {
-      "type": "string"
-    },
-    "keyVaultName": {
-      "type": "string"
-    },
-    "containerAppsEnvironmentName": {
-      "type": "string"
-    },
-    "applicationInsightsName": {
-      "type": "string"
-    },
-    "logAnalyticsworkspaceName": {
-      "type": "string"
     },
     "serviceBusQueueName": {
       "type": "string"
     }
   },
+  "variables": {
+    "storageAccountName": "[toLower(concat('st', replace(parameters('applicationName'), '-', ''), parameters('environment'), parameters('instanceNumber')))]",
+    "serviceBusNamespaceName": "[concat('sb-', parameters('applicationName'), '-', parameters('environment'), '-', parameters('instanceNumber'))]",
+    "acrName": "[toLower(concat('acr', replace(parameters('applicationName'), '-', ''), parameters('environment'), parameters('instanceNumber')))]",
+    "keyVaultName": "[concat('kv-', parameters('applicationName'), '-', parameters('environment'), '-', parameters('instanceNumber'))]",
+    "containerAppsEnvironmentName": "[concat('me-', parameters('applicationName'), '-', parameters('environment'), '-', parameters('instanceNumber'))]",
+    "applicationInsightsName": "[concat('appi-', parameters('applicationName'), '-', parameters('environment'), '-', parameters('instanceNumber'))]",
+    "logAnalyticsworkspaceName": "[concat('law-', parameters('applicationName'), '-', parameters('environment'), '-', parameters('instanceNumber'))]"
+  },
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2023-05-01",
-      "name": "[parameters('storageAccountName')]",
+      "name": "[variables('storageAccountName')]",
       "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]",
+      "tags": "[union(parameters('tags'), createObject('Environment', parameters('environment'), 'Application', parameters('applicationName')))]",
       "sku": {
         "name": "Standard_LRS"
       },
@@ -51,9 +53,9 @@
     {
       "type": "Microsoft.ServiceBus/namespaces",
       "apiVersion": "2022-10-01-preview",
-      "name": "[parameters('serviceBusNamespaceName')]",
+      "name": "[variables('serviceBusNamespaceName')]",
       "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]",
+      "tags": "[union(parameters('tags'), createObject('Environment', parameters('environment'), 'Application', parameters('applicationName')))]",
       "sku": {
         "name": "Basic",
         "tier": "Basic"
@@ -62,9 +64,9 @@
     {
       "type": "Microsoft.ServiceBus/namespaces/queues",
       "apiVersion": "2022-10-01-preview",
-      "name": "[concat(parameters('serviceBusNamespaceName'), '/', parameters('serviceBusQueueName'))]",
+      "name": "[concat(variables('serviceBusNamespaceName'), '/', parameters('serviceBusQueueName'))]",
       "dependsOn": [
-        "[resourceId('Microsoft.ServiceBus/namespaces', parameters('serviceBusNamespaceName'))]"
+        "[resourceId('Microsoft.ServiceBus/namespaces', variables('serviceBusNamespaceName'))]"
       ],
       "properties": {
         "maxDeliveryCount": 10,
@@ -76,9 +78,9 @@
     {
       "type": "Microsoft.ContainerRegistry/registries",
       "apiVersion": "2023-07-01",
-      "name": "[parameters('acrName')]",
+      "name": "[variables('acrName')]",
       "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]",
+      "tags": "[union(parameters('tags'), createObject('Environment', parameters('environment'), 'Application', parameters('applicationName')))]",
       "sku": {
         "name": "Basic"
       },
@@ -89,9 +91,9 @@
     {
       "type": "Microsoft.KeyVault/vaults",
       "apiVersion": "2023-07-01",
-      "name": "[parameters('keyVaultName')]",
+      "name": "[variables('keyVaultName')]",
       "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]",
+      "tags": "[union(parameters('tags'), createObject('Environment', parameters('environment'), 'Application', parameters('applicationName')))]",
       "properties": {
         "tenantId": "[subscription().tenantId]",
         "sku": {
@@ -103,23 +105,11 @@
       }
     },
     {
-      "type": "Microsoft.App/managedEnvironments",
-      "apiVersion": "2024-03-01",
-      "name": "[parameters('containerAppsEnvironmentName')]",
-      "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]",
-      "properties": {
-        "appLogsConfiguration": {
-          "destination": "azure-monitor"
-        }
-      }
-    },
-    {
       "type": "Microsoft.OperationalInsights/workspaces",
       "apiVersion": "2023-09-01",
-      "name": "[parameters('logAnalyticsworkspaceName')]",
+      "name": "[variables('logAnalyticsworkspaceName')]",
       "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]",
+      "tags": "[union(parameters('tags'), createObject('Environment', parameters('environment'), 'Application', parameters('applicationName')))]",
       "properties": {
         "sku": {
           "name": "PerGB2018"
@@ -128,38 +118,56 @@
       }
     },
     {
+      "type": "Microsoft.App/managedEnvironments",
+      "apiVersion": "2024-03-01",
+      "name": "[variables('containerAppsEnvironmentName')]",
+      "location": "[parameters('location')]",
+      "tags": "[union(parameters('tags'), createObject('Environment', parameters('environment'), 'Application', parameters('applicationName')))]",
+      "properties": {
+        "appLogsConfiguration": {
+          "destination": "log-analytics",
+          "logAnalyticsConfiguration": {
+            "customerId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsworkspaceName')), '2023-09-01').customerId]",
+            "sharedKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsworkspaceName')), '2023-09-01').primarySharedKey]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsworkspaceName'))]"
+      ]
+    },
+    {
       "type": "Microsoft.Insights/components",
       "apiVersion": "2020-02-02",
-      "name": "[parameters('applicationInsightsName')]",
+      "name": "[variables('applicationInsightsName')]",
       "location": "[parameters('location')]",
       "kind": "web",
       "dependsOn": [
-        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsworkspaceName'))]"
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsworkspaceName'))]"
       ],
       "properties": {
         "Application_Type": "web",
-        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsworkspaceName'))]"
+        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsworkspaceName'))]"
       }
     },
     {
       "type": "Microsoft.KeyVault/vaults/secrets",
       "apiVersion": "2023-07-01",
-      "name": "[concat(parameters('keyVaultName'), '/appinsights-connection-string')]",
+      "name": "[concat(variables('keyVaultName'), '/appinsights-connection-string')]",
       "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
-        "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]"
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+        "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]"
       ],
       "properties": {
-        "value": "[reference(resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')), '2020-02-02').ConnectionString]"
+        "value": "[reference(resourceId('Microsoft.Insights/components', variables('applicationInsightsName')), '2020-02-02').ConnectionString]"
       }
     },
     {
       "type": "Microsoft.KeyVault/vaults/secrets",
       "apiVersion": "2023-07-01",
-      "name": "[concat(parameters('keyVaultName'), '/service-bus-queue-name')]",
+      "name": "[concat(variables('keyVaultName'), '/servicebus-queue-name')]",
       "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
-        "[resourceId('Microsoft.ServiceBus/namespaces/queues', parameters('serviceBusNamespaceName'), parameters('serviceBusQueueName'))]"
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
       ],
       "properties": {
         "value": "[parameters('serviceBusQueueName')]"
@@ -169,27 +177,35 @@
   "outputs": {
     "storageAccountName": {
       "type": "string",
-      "value": "[parameters('storageAccountName')]"
+      "value": "[variables('storageAccountName')]"
     },
     "serviceBusNamespaceName": {
       "type": "string",
-      "value": "[parameters('serviceBusNamespaceName')]"
+      "value": "[variables('serviceBusNamespaceName')]"
     },
     "acrName": {
       "type": "string",
-      "value": "[parameters('acrName')]"
+      "value": "[variables('acrName')]"
     },
     "keyVaultName": {
       "type": "string",
-      "value": "[parameters('keyVaultName')]"
+      "value": "[variables('keyVaultName')]"
     },
     "containerAppsEnvironmentName": {
       "type": "string",
-      "value": "[parameters('containerAppsEnvironmentName')]"
+      "value": "[variables('containerAppsEnvironmentName')]"
     },
-    "applicationInsightsConnectionString": {
+    "applicationInsightsName": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')), '2020-02-02').ConnectionString]"
+      "value": "[variables('applicationInsightsName')]"
+    },
+    "serviceBusNamespaceFqdn": {
+      "type": "string",
+      "value": "[concat(variables('serviceBusNamespaceName'), '.servicebus.windows.net')]"
+    },
+    "serviceBusQueueName": {
+      "type": "string",
+      "value": "[parameters('serviceBusQueueName')]"
     }
   }
 }
