@@ -1,12 +1,14 @@
 name: Deploy Infrastructure
 
+# on:
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - 'iac-arm/rg-scope/**'
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'iac-arm/rg-scope/**'
-
+  workflow_dispatch:
+  
 permissions:
   id-token: write
   contents: read
