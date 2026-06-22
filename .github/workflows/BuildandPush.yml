@@ -1,6 +1,7 @@
 name: CI/CD workflow to build and deploy to container app.
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
     paths:
@@ -13,8 +14,8 @@ permissions:
 env:
   IMAGE_NAME: zeiss-api
   IMAGE_TAG: ${{ github.run_number }}
-  ACR_NAME: acrzeissdev1001
-  CONTAINER_APP_NAME: ca-zeiss-dev-1001
+  ACR_NAME: acrzeissdev1002
+  CONTAINER_APP_NAME: ca-zeiss-dev-1002
   RESOURCE_GROUP: rg-zeiss-assessment-01
 
 jobs:
