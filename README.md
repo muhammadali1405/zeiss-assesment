@@ -24,3 +24,4 @@ Need to set below env variables in GitHub:
 4. ACR_NAME                 : ACR Name from iac deployment output
 5. CONTAINER_APP_NAME       : Container app name from iac deployment output
 6. RESOURCE_GROUP           : Resource Group name from iac deployment output
+7. OBJ_ID                   : az ad sp show --id $AZURE_CLIENT_ID --query id -o tsv
