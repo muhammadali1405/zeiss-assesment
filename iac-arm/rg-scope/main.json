@@ -209,6 +209,18 @@
               "server": "[concat(variables('acrName'), '.azurecr.io')]",
               "identity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]"
             }
+          ],
+          "secrets": [
+            {
+              "name": "servicebus-fqdn",
+              "keyVaultUrl": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/secrets/servicebus-fqdn')]",
+              "identity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]"
+            },
+            {
+              "name": "servicebus-queue-name",
+              "keyVaultUrl": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/secrets/servicebus-queue-name')]",
+              "identity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]"
+            }
           ]
         },
         "template": {
@@ -216,6 +228,16 @@
             {
               "name": "api",
               "image": "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest",
+              "env": [
+                {
+                  "name": "SERVICE_BUS_FQDN",
+                  "secretRef": "servicebus-fqdn"
+                },
+                {
+                  "name": "SERVICE_BUS_QUEUE_NAME",
+                  "secretRef": "servicebus-queue-name"
+                }
+              ],
               "resources": {
                 "cpu": 0.5,
                 "memory": "1Gi"
