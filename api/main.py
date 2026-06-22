@@ -20,7 +20,7 @@ QUEUE_NAME = os.environ(
 
 if not SERVICE_BUS_FQDN:
     raise ValueError(
-        "SERVICE_BUS_FQDN environment variable is not set"
+        "SERVICE_BUS_FQDN environment variable is not set. Please add in KeyVault and Env"
     )
 
 credential = DefaultAzureCredential()
