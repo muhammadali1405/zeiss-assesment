@@ -197,7 +197,8 @@
         "[resourceId('Microsoft.App/managedEnvironments', variables('containerAppsEnvironmentName'))]",
         "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]",
         "[resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'servicebus-fqdn')]",
-        "[resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'servicebus-queue-name')]"
+        "[resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'servicebus-queue-name')]",
+        "[resourceId('Microsoft.KeyVault/vaults/secrets', variables('keyVaultName'), 'managed-identity-client-id')]"
       ],
       "properties": {
         "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', variables('containerAppsEnvironmentName'))]",
@@ -222,6 +223,11 @@
               "name": "servicebus-queue-name",
               "keyVaultUrl": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/secrets/servicebus-queue-name')]",
               "identity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]"
+            },
+            {
+              "name": "managed-identity-client-id",
+              "keyVaultUrl": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/secrets/managed-identity-client-id')]",
+              "identity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]"
             }
           ]
         },
@@ -238,6 +244,10 @@
                 {
                   "name": "SERVICE_BUS_QUEUE_NAME",
                   "secretRef": "servicebus-queue-name"
+                },
+                {
+                  "name": "AZURE_CLIENT_ID",
+                  "secretRef": "managed-identity-client-id"
                 }
               ],
               "resources": {
@@ -304,6 +314,18 @@
       ],
       "properties": {
         "value": "[concat(variables('serviceBusNamespaceName'), '.servicebus.windows.net')]"
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2023-07-01",
+      "name": "[concat(variables('keyVaultName'), '/managed-identity-client-id')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]"
+      ],
+      "properties": {
+        "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName')), '2023-01-31').clientId]"
       }
     }
   ],

@@ -9,22 +9,23 @@ import time
 from contextlib import asynccontextmanager
 
 # Environment Variables
-SERVICE_BUS_FQDN = os.getenv(
-    "SERVICE_BUS_FQDN"
-)
+SERVICE_BUS_FQDN = os.getenv("SERVICE_BUS_FQDN")
 
 QUEUE_NAME = os.getenv(
     "SERVICE_BUS_QUEUE_NAME",
     "work-queue"
 )
 
+CLIENT_ID = os.getenv("AZURE_CLIENT_ID")
+
 if not SERVICE_BUS_FQDN:
     raise ValueError(
         "SERVICE_BUS_FQDN environment variable is not set. Please add in KeyVault and Env"
     )
 
-credential = DefaultAzureCredential()
-
+credential = DefaultAzureCredential(
+    managed_identity_client_id=CLIENT_ID
+)
 processed_items = []
 
 
