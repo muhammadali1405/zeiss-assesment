@@ -13,8 +13,8 @@ permissions:
 
 env:
   RESOURCE_GROUP: rg-zeiss-assessment-01
-  TEMPLATE_FILE: rg-scope/main.json
-  PARAMETER_FILE: rg-scope/main.parameters.json
+  TEMPLATE_FILE: iac-arm/rg-scope/main.json
+  PARAMETER_FILE: iac-arm/rg-scope/main.parameters.json
 
 jobs:
   deploy-infra:
