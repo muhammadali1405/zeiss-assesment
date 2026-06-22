@@ -1,6 +1,6 @@
 set -x
 
-ACR_NAME="acrzeissdev2"
+ACR_NAME="acrzeissdev60"
 
 #create app registration
 az ad app create --display-name github-zeiss-assessment
@@ -38,13 +38,14 @@ az ad app federated-credential create \
     ]
   }'
 
+#get rg id to add access
 RG_ID=$(az group show \
   --name rg-zeiss-assessment-01 \
   --query id \
   -o tsv)
 
-#add contributer to deploy
+#add Container Apps Contributor to deploy
 az role assignment create \
   --assignee $APP_ID \
-  --role Contributor \
+  --role "358470bc-b998-42bd-ab17-a7e34c199c0f" \
   --scope $RG_ID
