@@ -14,3 +14,13 @@ zeiss assesment Muhammad Ali DevOps
 Pending:
     1. Enable managed identity and add Azure service bus data roles and modify api to use that
     2. Add deployment in github action workflow
+
+
+Need to set below env variables in GitHub:
+1. AZURE_CLIENT_ID          : az ad app list --display-name <app_reg_name> --query "[0].appId" -o tsv  (github-zeiss-assessment)
+#client id of the SP b/w github and ACR
+2. AZURE_SUBSCRIPTION_ID    : az account show --query id -o tsv 
+3. AZURE_TENANT_ID          : az account show --query tenantId -o tsv
+4. ACR_NAME                 : ACR Name from iac deployment output
+5. CONTAINER_APP_NAME       : Container app name from iac deployment output
+6. RESOURCE_GROUP           : Resource Group name from iac deployment output
