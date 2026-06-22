@@ -3,6 +3,8 @@ name: CI/CD workflow to build and deploy to container app.
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'api/**'
     
 permissions:
   id-token: write
