@@ -9,11 +9,11 @@ import time
 from contextlib import asynccontextmanager
 
 # Environment Variables
-SERVICE_BUS_FQDN = os.environ(
+SERVICE_BUS_FQDN = os.getenv(
     "SERVICE_BUS_FQDN"
 )
 
-QUEUE_NAME = os.environ(
+QUEUE_NAME = os.getenv(
     "SERVICE_BUS_QUEUE_NAME",
     "work-queue"
 )
