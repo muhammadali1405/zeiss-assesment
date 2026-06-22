@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 env:
-  RESOURCE_GROUP: rg-zeiss-assessment-01
+  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
   TEMPLATE_FILE: iac-arm/rg-scope/main.json
   PARAMETER_FILE: iac-arm/rg-scope/main.parameters.json
 
