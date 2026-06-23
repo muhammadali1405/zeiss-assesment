@@ -17,6 +17,7 @@ env:
   RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
   TEMPLATE_FILE: iac-arm/rg-scope/main.json
   PARAMETER_FILE: iac-arm/rg-scope/main.parameters.json
+  OBJ_ID: ${{ secrets.OBJ_ID }}
 
 jobs:
   deploy-infra:
@@ -38,7 +39,8 @@ jobs:
           az deployment group validate \
             --resource-group $RESOURCE_GROUP \
             --template-file $TEMPLATE_FILE \
-            --parameters @$PARAMETER_FILE
+            --parameters @$PARAMETER_FILE \
+            --parameters githubSpObjectId=${{ secrets.$OBJ_ID }}
 
       - name: Deploy ARM Template
         run: |
@@ -46,4 +48,5 @@ jobs:
             --resource-group $RESOURCE_GROUP \
             --template-file $TEMPLATE_FILE \
             --parameters @$PARAMETER_FILE \
-            --name infra-${{ github.run_number }}
+            --parameters githubSpObjectId=${{ secrets.$OBJ_ID }} \
+            --name infra-${{ github.run_number }} 
