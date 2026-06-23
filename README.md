@@ -30,3 +30,7 @@ HOW to run:
 5. Run IACDeploy.yml workflow to create the resources and verify in portal.
 6. Update the ACR_NAME in scripts/access.sh file and run the file (This needs to be automated next - PENDING)
 7. Run the BuildandPush.yml
+
+All secrets will be stored in Azure KeyVault
+
+Api will be live on <ContainerappURL>/api/work
