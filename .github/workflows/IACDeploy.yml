@@ -40,7 +40,7 @@ jobs:
             --resource-group $RESOURCE_GROUP \
             --template-file $TEMPLATE_FILE \
             --parameters @$PARAMETER_FILE \
-            --parameters githubSpObjectId=${{ secrets.$OBJ_ID }}
+            --parameters githubSpObjectId=${{ secrets.OBJ_ID }}
 
       - name: Deploy ARM Template
         run: |
@@ -48,5 +48,5 @@ jobs:
             --resource-group $RESOURCE_GROUP \
             --template-file $TEMPLATE_FILE \
             --parameters @$PARAMETER_FILE \
-            --parameters githubSpObjectId=${{ secrets.$OBJ_ID }} \
+            --parameters githubSpObjectId=${{ secrets.OBJ_ID }} \
             --name infra-${{ github.run_number }} 
