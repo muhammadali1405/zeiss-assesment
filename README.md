@@ -10,12 +10,6 @@ zeiss assesment Muhammad Ali DevOps
     a. Contains script to create connection b/w Azure container registry and GitHub
 
 
-
-Pending:
-    1. Enable managed identity and add Azure service bus data roles and modify api to use that
-    2. Add deployment in github action workflow
-
-
 Need to set below env variables in GitHub:
 1. AZURE_CLIENT_ID          : az ad app list --display-name <app_reg_name> --query "[0].appId" -o tsv  (github-zeiss-assessment)
 #client id of the SP b/w github and ACR
@@ -25,3 +19,14 @@ Need to set below env variables in GitHub:
 5. CONTAINER_APP_NAME       : Container app name from iac deployment output
 6. RESOURCE_GROUP           : Resource Group name from iac deployment output
 7. OBJ_ID                   : az ad sp show --id $AZURE_CLIENT_ID --query id -o tsv
+
+
+HOW to run:
+
+1. Set Above Env variables
+2. update the Resource group name and location in the rg.parametres.json in subscription-scope folder on iac-arm
+3. Run RgDeploy.yml workflow and verify its created on the portal.
+4. Update the instanceNumber and environemnt in the main.parameters.json file in the iac-arm. 
+5. Run IACDeploy.yml workflow to create the resources and verify in portal.
+6. Update the ACR_NAME in scripts/access.sh file and run the file (This needs to be automated next - PENDING)
+7. Run the BuildandPush.yml
