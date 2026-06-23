@@ -1,0 +1,43 @@
+name: Deploy Resource Group
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  TEMPLATE_FILE: iac-arm/sub-scope/resource-group.json
+  PARAMETER_FILE: iac-arm/sub-scope/resource-group.parameters.json
+  LOCATION: centralindia
+
+jobs:
+  deploy-rg:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Validate ARM Template
+        run: |
+          az deployment sub validate \
+            --location $LOCATION \
+            --template-file $TEMPLATE_FILE \
+            --parameters @$PARAMETER_FILE
+
+      - name: Deploy ARM Template
+        run: |
+          az deployment sub create \
+            --location $LOCATION \
+            --template-file $TEMPLATE_FILE \
+            --parameters @$PARAMETER_FILE \
+            --name rg-${{ github.run_number }}
